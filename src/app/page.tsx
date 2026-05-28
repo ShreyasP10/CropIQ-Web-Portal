@@ -1,65 +1,238 @@
-import Image from "next/image";
+"use client";
+
+import {
+  ArrowRight,
+  Brain,
+  CloudOff,
+  History,
+  Leaf,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import {
+  AnimatedCounter,
+  FeatureCard,
+  GlassCard,
+  GradientButton,
+  Logo,
+  SectionShell,
+} from "@/components/shared";
+import { motion } from "framer-motion";
+import { useLiveStats } from "@/hooks/use-live-stats";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScreenshotCarousel } from "@/components/shared/screenshot-carousel";
+
+const FaqAccordion = dynamic(() =>
+  import("@/components/shared/faq-accordion").then((m) => m.FaqAccordion)
+);
+
+const FEATURES = [
+  {
+    icon: Sparkles,
+    title: "AI Fruit Detection",
+    description:
+      "Identify fruits instantly with on-device TensorFlow Lite models.",
+  },
+  {
+    icon: Leaf,
+    title: "Crop Disease Detection",
+    description:
+      "Detect diseases early and get actionable care recommendations.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Community Feed",
+    description: "Share insights, learn from peers, and grow together.",
+  },
+  {
+    icon: History,
+    title: "Detection History",
+    description: "Track past scans and monitor crop health over time.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Smart Precautions & Care",
+    description:
+      "Get prevention tips and treatment guidance after each scan.",
+  },
+  {
+    icon: CloudOff,
+    title: "Offline AI Detection",
+    description:
+      "Core detection works without internet in the field.",
+  },
+] as const;
+
+const SCREENSHOTS = [
+  { src: "/screenshots/Detection.jpeg", alt: "Detection screen", label: "Fruit Detection" },
+  { src: "/screenshots/Detection2.jpeg", alt: "Detection screen 2", label: "Detection V2" },
+  { src: "/screenshots/Dashboard.jpeg", alt: "Dashboard", label: "Dashboard" },
+  { src: "/screenshots/Community.jpeg", alt: "Community feed", label: "Community Feed" },
+  { src: "/screenshots/YourCrop.jpeg", alt: "Your Crop", label: "Your Crop" },
+  { src: "/screenshots/Profile.png", alt: "Profile section", label: "Profile" },
+  { src: "/screenshots/PrecautionsPopUp.jpeg", alt: "Precautions popup", label: "Precautions" },
+  { src: "/screenshots/History.jpeg", alt: "History page", label: "Detection History" },
+  { src: "/screenshots/Setting.jpeg", alt: "Settings page", label: "Settings" },
+] as const;
 
 export default function Home() {
+  const { stats, loading: statsLoading } = useLiveStats();
+
+  const statItems = [
+    { label: "Total Downloads", value: stats.totalDownloads },
+    { label: "Total Detections", value: stats.totalDetections },
+    { label: "Active Users", value: stats.activeUsers },
+    { label: "Community Posts", value: stats.communityPosts },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div>
+      {/* HERO */}
+      <section className="relative overflow-hidden py-8 md:py-12">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-green-500/5" />
+        <div className="pointer-events-none absolute -top-32 left-0 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 right-0 h-80 w-80 rounded-full bg-green-400/10 blur-3xl" />
+        <div className="relative mx-auto grid w-full max-w-7xl gap-8 px-4 md:grid-cols-2">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <Logo className="mb-6" />
+            <p className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-700 dark:text-cyan-300">
+              AI Powered Crop & Fruit Detection for Smarter Farming
+            </p>
+            <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+              <span className="gradient-text">CropIQ</span>
+              <br />
+              Premium AI for Modern Agriculture
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+              Detect crop diseases and fruit types in seconds with on-device TensorFlow Lite AI and a farmer-first
+              Android experience.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <GradientButton href="/download">
+                Download APK <ArrowRight className="ml-2 h-4 w-4" />
+              </GradientButton>
+              <GradientButton href="/features" variant="outline">
+                Explore Features
+              </GradientButton>
+            </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative flex items-center justify-center"
+          >
+            <ScreenshotCarousel items={SCREENSHOTS} />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <SectionShell
+        eyebrow="Features"
+        title="Built for the field"
+        description="Everything farmers need in one intelligent app."
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature, index) => (
+            <FeatureCard key={feature.title} {...feature} index={index} />
+          ))}
+        </div>
+      </SectionShell>
+
+      {/* WHY CROPIQ */}
+      <SectionShell
+        eyebrow="Why CropIQ"
+        title="Smarter farming, faster decisions"
+        align="center"
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { icon: Brain, label: "Fast AI Detection" },
+            { icon: CloudOff, label: "Offline Support" },
+            { icon: Users, label: "Farmer Friendly" },
+            { icon: Leaf, label: "Smart Crop Monitoring" },
+            { icon: ShieldCheck, label: "Easy To Use" },
+            { icon: ShieldCheck, label: "Accurate Results" },
+          ].map((item, index) => (
+            <FeatureCard
+              key={item.label}
+              icon={item.icon}
+              title={item.label}
+              description="Designed for reliability in real agricultural environments."
+              index={index}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
+      </SectionShell>
+
+      {/* LIVE STATS */}
+      <SectionShell
+        eyebrow="Live Stats"
+        title="Growing with farmers"
+        align="center"
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {statItems.map((stat) => (
+            <GlassCard key={stat.label} hover className="text-center">
+              {statsLoading ? (
+                <Skeleton className="mx-auto h-8 w-20" />
+              ) : (
+                <p className="text-3xl font-bold">
+                  <AnimatedCounter value={stat.value} />
+                </p>
+              )}
+              <p className="mt-2 text-sm text-muted-foreground">
+                {stat.label}
+              </p>
+            </GlassCard>
+          ))}
+        </div>
+      </SectionShell>
+
+      {/* FAQ */}
+      <SectionShell
+        eyebrow="FAQ"
+        title="Frequently asked questions"
+        className="pb-20"
+      >
+        <FaqAccordion
+          items={[
+            {
+              question: "How do I install the CropIQ APK?",
+              answer:
+                "Open the Download page, tap Download APK, then allow installation from unknown sources on your Android device if prompted.",
+            },
+            {
+              question: "Is CropIQ free to use?",
+              answer:
+                "Yes, the current release is free for farmers and agriculture learners, with future premium features planned for advanced analytics.",
+            },
+            {
+              question: "Does detection work offline?",
+              answer:
+                "Yes. Core fruit and crop disease detection runs on-device using TensorFlow Lite, so internet is not required for the detection flow.",
+            },
+            {
+              question: "Is internet required at all?",
+              answer:
+                "Internet is needed for community features, syncing updates, and receiving the latest app data, but core scanning can run offline.",
+            },
+            {
+              question: "How accurate are predictions?",
+              answer:
+                "Model accuracy depends on image quality, lighting, and crop conditions. CropIQ continuously improves models with data-driven updates.",
+            },
+          ]}
+        />
+      </SectionShell>
     </div>
   );
 }

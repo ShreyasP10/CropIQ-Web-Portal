@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "Count": {
+      ".read": true,
+      "totalDownloads": {
+        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
+      },
+      "todayDownloads": {
+        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
+      },
+      "totalDetections": {
+        ".write": "auth != null && (auth.token.email === 'admin@cropiq.app' || auth.token.email === 'founder@cropiq.app')"
+      },
+      "activeUsers": {
+        ".write": "auth != null && (auth.token.email === 'admin@cropiq.app' || auth.token.email === 'founder@cropiq.app')"
+      },
+      "communityPosts": {
+        ".write": "auth != null && (auth.token.email === 'admin@cropiq.app' || auth.token.email === 'founder@cropiq.app')"
+      }
+    },
+    "VersionDownloads": {
+      ".read": true,
+      "$version": {
+        ".write": "$version.matches(/^v[0-9]+\\.[0-9]+\\.[0-9]+$/) && newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
+      }
+    }
+  }
+}
