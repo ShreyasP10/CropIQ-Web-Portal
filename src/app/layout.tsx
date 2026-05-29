@@ -4,6 +4,7 @@ import { SITE_CONFIG } from "@/constants/site";
 import { AppProviders } from "@/providers/app-providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -39,6 +40,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </AppProviders>
+
+        <Analytics />
       </body>
     </html>
   );
