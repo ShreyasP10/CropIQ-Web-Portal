@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { Mail } from "lucide-react"; // Keep Mail from lucide
+import { Mail } from "lucide-react";
 import { FOOTER_LINKS, SITE_CONFIG } from "@/constants/site";
 import { Logo } from "@/components/shared/logo";
+import { useLatestVersion } from "@/hooks/use-latest-version";
 
 // Simple inline GitHub icon SVG (24x24)
 const GitHubIcon = () => (
@@ -22,6 +25,9 @@ const GitHubIcon = () => (
 );
 
 export function Footer() {
+  const liveVersion = useLatestVersion(); // Fetch real-time version from Realtime Database
+  const displayVersion = liveVersion ?? SITE_CONFIG.version; // fallback to static version
+
   return (
     <footer className="relative border-t border-white/10 bg-background/70 backdrop-blur-xl">
       {/* Gradient top accent */}
@@ -86,18 +92,26 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href={SITE_CONFIG.links.github}
+                  href="https://github.com/ShreyasP10"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
+                  {/* GitHub avatar */}
+                  <img
+                    src="https://github.com/ShreyasP10.png"
+                    alt="Shreyas Pawar GitHub"
+                    className="h-5 w-5 rounded-full"
+                    loading="lazy"
+                  />
                   <GitHubIcon />
-                  GitHub Repository
+                  ShreyasP10
                 </a>
               </li>
               <li>
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground backdrop-blur-md">
-                  App version <span className="font-semibold text-foreground">v{SITE_CONFIG.version}</span>
+                  App version{" "}
+                  <span className="font-semibold text-foreground">v{displayVersion}</span>
                 </span>
               </li>
             </ul>
@@ -107,9 +121,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</p>
-          <p className="text-xs">
-            Built with Next.js · Firebase · TensorFlow Lite
-          </p>
+          <p className="text-xs">Built with Next.js · Firebase · TensorFlow Lite</p>
         </div>
       </div>
     </footer>
