@@ -84,7 +84,7 @@ export default function Home() {
   const statItems = [
     { label: "Total Downloads", value: stats.totalDownloads },
     { label: "Total Detections", value: stats.totalDetections },
-    { label: "Active Users", value: stats.activeUsers },
+    { label: "Total Users", value: stats.activeUsers },
     { label: "Community Posts", value: stats.communityPosts },
   ];
 
