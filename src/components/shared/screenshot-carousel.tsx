@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -29,24 +30,31 @@ export function ScreenshotCarousel({ items }: { items: readonly ScreenshotItem[]
   const current = safeItems[index];
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full max-w-[320px] mx-auto">
-      {/* Image container – no forced aspect ratio */}
-      <div className="w-full overflow-hidden rounded-lg">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${current.alt}-${index}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <img
-              src={current.src || "/placeholder-screenshot.png"}
-              alt={current.alt}
-              className="w-full h-auto block rounded-lg"
-            />
-          </motion.div>
-        </AnimatePresence>
+    <div className="flex flex-col items-center gap-3 w-full max-w-[280px] mx-auto">
+      {/* Phone frame */}
+      <div className="relative w-full rounded-[2.5rem] border-4 border-gray-800 bg-gray-900 p-3 shadow-2xl shadow-cyan-500/5 dark:border-gray-700 dark:bg-gray-800">
+        {/* Notch */}
+        <div className="absolute left-1/2 top-0 z-10 h-5 w-28 -translate-x-1/2 rounded-b-xl bg-gray-800 dark:bg-gray-700" />
+        {/* Screen */}
+        <div className="relative overflow-hidden rounded-[1.75rem]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${current.alt}-${index}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Image
+                src={current.src || "/placeholder-screenshot.png"}
+                alt={current.alt}
+                width={240}
+                height={480}
+                className="w-full h-auto block"
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Navigation arrows */}

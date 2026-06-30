@@ -41,6 +41,7 @@ function UserAvatar({ user }: { user: PresenceUser }) {
       {/* Avatar circle */}
       <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground shadow-inner ring-1 ring-white/10">
         {imgSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imgSrc}
             alt={user.name}
@@ -70,6 +71,7 @@ function UserAvatar({ user }: { user: PresenceUser }) {
           >
             <div className="flex items-center gap-3">
               {imgSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={imgSrc}
                   alt={user.name}

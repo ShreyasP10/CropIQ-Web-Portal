@@ -3,22 +3,28 @@ import { cn } from "@/lib/utils";
 type GlassCardProps = React.ComponentProps<"div"> & {
   hover?: boolean;
   glow?: boolean;
+  variant?: "glass" | "solid" | "elevated";
 };
 
 export function GlassCard({
   className,
   hover = false,
   glow = false,
+  variant = "solid",
   children,
   ...props
 }: GlassCardProps) {
   return (
     <div
       className={cn(
-        "glass rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-xl",
-        "dark:border-white/10 dark:bg-white/5",
-        hover &&
-          "transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-cyan-500/10",
+        "rounded-2xl p-6 transition-all duration-300",
+        variant === "glass" &&
+          "border border-white/10 bg-white/5 shadow-lg backdrop-blur-lg dark:bg-white/5",
+        variant === "solid" &&
+          "border border-border/60 bg-card shadow-sm",
+        variant === "elevated" &&
+          "border border-border/40 bg-card shadow-md",
+        hover && "hover:-translate-y-1 hover:shadow-lg",
         glow && "ring-1 ring-cyan-400/20",
         className,
       )}

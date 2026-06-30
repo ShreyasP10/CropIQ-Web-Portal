@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FOOTER_LINKS, SITE_CONFIG } from "@/constants/site";
@@ -98,11 +99,12 @@ export function Footer() {
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {/* GitHub avatar */}
-                  <img
+                  <Image
                     src="https://github.com/ShreyasP10.png"
                     alt="Shreyas Pawar GitHub"
-                    className="h-5 w-5 rounded-full"
-                    loading="lazy"
+                    width={20}
+                    height={20}
+                    className="rounded-full"
                   />
                   <GitHubIcon />
                   ShreyasP10

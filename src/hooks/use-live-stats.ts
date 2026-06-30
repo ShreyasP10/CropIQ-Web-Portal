@@ -19,13 +19,10 @@ export function useLiveStats() {
     activeUsers: 0,
     communityPosts: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!rtdb);
 
   useEffect(() => {
-    if (!rtdb) {
-      setLoading(false);
-      return;
-    }
+    if (!rtdb) return;
     const countRef = ref(rtdb, "Count");
     const unsubscribe = onValue(countRef, (snapshot) => {
       const value = snapshot.val();

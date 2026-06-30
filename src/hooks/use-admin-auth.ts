@@ -6,14 +6,11 @@ import { auth } from "@/lib/firebase/client";
 import { isAllowedAdmin } from "@/lib/utils/admin-whitelist";
 
 export function useAdminAuth() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!auth);
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
+    if (!auth) return;
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user?.email && isAllowedAdmin(user.email)) {

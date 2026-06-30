@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export function FloatingLinkedInButton() {
@@ -13,11 +14,12 @@ export function FloatingLinkedInButton() {
       whileTap={{ scale: 0.95 }}
       aria-label="View CropIQ LinkedIn post"
     >
-      {/* Replace the URL below with your copied image address */}
-      <img
-        src="https://media.licdn.com/dms/image/v2/D4E03AQEIEIlgxjpW0w/profile-displayphoto-crop_800_800/B4EZtW_jK2IUAI-/0/1766691061455?e=1781740800&v=beta&t=2tJtSRPIuUeZH2qCcsqGZitSPSrPDU_mFB7UjJkONcE" // ← put your actual image URL here
+      <Image
+        src="https://media.licdn.com/dms/image/v2/D4E03AQEIEIlgxjpW0w/profile-displayphoto-crop_800_800/B4EZtW_jK2IUAI-/0/1766691061455?e=1781740800&v=beta&t=2tJtSRPIuUeZH2qCcsqGZitSPSrPDU_mFB7UjJkONcE"
         alt="Shreyas Pawar"
-        className="h-6 w-6 rounded-full object-cover"
+        width={24}
+        height={24}
+        className="rounded-full object-cover"
       />
       <span>LinkedIn</span>
     </motion.a>

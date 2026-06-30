@@ -35,6 +35,6 @@ export const NAV_LINKS = [
 ] as const;
 
 export const ADMIN_WHITELIST = [
-  "admin@cropiq.app",
-  "founder@cropiq.app",
+  "shreyaspawar1011@gmail.com",
+  "pixellpenguiin@gmail.com",
 ] as const;

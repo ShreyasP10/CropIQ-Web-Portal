@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Arial Black", Arial, system-ui, sans-serif;
+  --font-sans: "Inter", Arial, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --font-heading: "Arial Black", Arial, sans-serif;
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -29,6 +29,8 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-warm: var(--accent-warm);
+  --color-accent-warm-foreground: var(--accent-warm-foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -63,6 +65,8 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.8 0.12 170);
   --accent-foreground: oklch(0.2 0.03 240);
+  --accent-warm: oklch(0.75 0.15 70);
+  --accent-warm-foreground: oklch(0.2 0.03 240);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -98,6 +102,8 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.44 0.11 170);
   --accent-foreground: oklch(0.96 0.01 180);
+  --accent-warm: oklch(0.6 0.12 70);
+  --accent-warm-foreground: oklch(0.98 0.01 180);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
@@ -128,7 +134,8 @@ body {
   background-image:
     radial-gradient(circle farthest-corner at 10% 0%, rgba(56, 189, 248, 0.08), transparent),
     radial-gradient(circle farthest-corner at 90% 0%, rgba(34, 211, 238, 0.06), transparent),
-    radial-gradient(circle farthest-corner at 50% 100%, rgba(34, 197, 94, 0.06), transparent);
+    radial-gradient(circle farthest-corner at 50% 100%, rgba(34, 197, 94, 0.06), transparent),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
   html {
@@ -136,15 +143,23 @@ body {
   }
 
   h1, h2, h3 {
-    font-family: "Arial Black", Arial, sans-serif;
-    font-weight: 900;
+    font-family: var(--font-heading);
+    font-weight: 700;
     letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl;
+    @apply border border-white/10 bg-white/5 shadow-lg backdrop-blur-lg;
+  }
+
+  .card-solid {
+    @apply rounded-2xl border border-border/60 bg-card shadow-sm;
+  }
+
+  .card-elevated {
+    @apply rounded-2xl border border-border/40 bg-card shadow-md;
   }
 
   .gradient-text {

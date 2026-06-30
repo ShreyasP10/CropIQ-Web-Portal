@@ -22,7 +22,7 @@ export function getAdminApp() {
 
     databaseURL:
       process.env
-      .FIREBASE_DATABASE_URL,
+      .NEXT_PUBLIC_FIREBASE_DATABASE_URL,
   });
 }
 export function getAdminMessaging() {

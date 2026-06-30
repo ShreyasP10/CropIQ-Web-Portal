@@ -22,12 +22,12 @@ export function FeatureCard({
 }: FeatureCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, delay: index * 0.08 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.06 }}
     >
-      <GlassCard hover className={cn("h-full", className)}>
+      <GlassCard hover variant="elevated" className={cn("h-full", className)}>
         <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-green-500/20 p-3">
           <Icon className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
         </div>

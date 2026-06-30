@@ -9,8 +9,7 @@ const protectedPaths = [
   "/admin/notifications",
 ];
 
-export default function proxy(request: NextRequest) {
-  // You can also use: export function proxy(request: NextRequest) { ... }
+export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/admin/login") {

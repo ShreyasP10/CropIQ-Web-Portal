@@ -1,6 +1,19 @@
-import { createHmac } from "crypto";
+import { createHmac, randomBytes } from "crypto";
 
-const SECRET = process.env.ADMIN_SESSION_SECRET || "fallback-secret-change-me";
+function getSecret(): string {
+  const envSecret = process.env.ADMIN_SESSION_SECRET;
+  if (envSecret && envSecret !== "fallback-secret-change-me") {
+    return envSecret;
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "ADMIN_SESSION_SECRET must be set in production"
+    );
+  }
+  return randomBytes(32).toString("hex");
+}
+
+const SECRET = getSecret();
 
 export function signEmail(email: string): string {
   const hmac = createHmac("sha256", SECRET);

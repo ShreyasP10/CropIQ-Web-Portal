@@ -23,13 +23,10 @@ const FALLBACK: RealtimeCount = {
 
 export function useAdminCounts() {
   const [counts, setCounts] = useState<RealtimeCount>(FALLBACK);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!rtdb);
 
   useEffect(() => {
-    if (!rtdb) {
-      setLoading(false);
-      return;
-    }
+    if (!rtdb) return;
 
     const countRef = ref(rtdb, "Count");
     const unsubscribe = onValue(countRef, (snapshot) => {
@@ -52,8 +49,8 @@ export function useAdminCounts() {
             const data = root.val();
             let detections = 0;
             if (data) {
-              Object.values(data).forEach((r: any) => {
-                if (r && typeof r === "object" && r.cropName) detections++;
+              Object.values(data).forEach((r: unknown) => {
+                if (r && typeof r === "object" && "cropName" in r) detections++;
               });
             }
             setCounts((prev) => ({

@@ -6,13 +6,10 @@ import { rtdb } from "@/lib/firebase/client";
 
 export function useHeartbeatCount() {
   const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!rtdb);
 
   useEffect(() => {
-    if (!rtdb) {
-      setLoading(false);
-      return;
-    }
+    if (!rtdb) return;
     const heartbeatsRef = ref(rtdb, "DeviceHeartbeats");
     const unsubscribe = onValue(heartbeatsRef, (snapshot) => {
       const value = snapshot.val() as Record<string, number> | null;

@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
   // Prevent source map leakage in production (security vulnerability #20)
   productionBrowserSourceMaps: false,
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media.licdn.com",
+      },
+    ],
+  },
+
   // Add basic security headers to every response
   async headers() {
     return [

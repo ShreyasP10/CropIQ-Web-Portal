@@ -15,19 +15,17 @@ export interface PresenceUser {
 
 export function usePresenceUsers() {
   const [users, setUsers] = useState<PresenceUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!rtdb);
 
   useEffect(() => {
-    if (!rtdb) {
-      setLoading(false);
-      return;
-    }
+    if (!rtdb) return;
 
     // Listen to both presence and Users nodes
     const presenceRef = ref(rtdb, "presence");
     const usersRef = ref(rtdb, "Users");
 
-    let presenceData: Record<string, any> = {};
+    let presenceData: Record<string, Record<string, unknown>> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let usersData: Record<string, any> = {};
     let presenceLoaded = false;
     let usersLoaded = false;
@@ -36,6 +34,7 @@ export function usePresenceUsers() {
       if (!presenceLoaded || !usersLoaded) return;
 
       const merged: PresenceUser[] = Object.entries(presenceData).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ([uid, value]: [string, any]) => ({
           uid,
           name: value.name || "Unknown",
