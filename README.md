@@ -1,6 +1,6 @@
 # CropIQ Website
 
-Premium production-ready website for the CropIQ Android app (AI crop disease + fruit detection).
+### Premium production-ready website for the CropIQ Android app (AI crop disease + fruit detection).
 
 ## Maintenance Rule
 
