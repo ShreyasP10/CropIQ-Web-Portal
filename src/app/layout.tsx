@@ -46,6 +46,12 @@ export const metadata: Metadata = {
     images: [SITE_CONFIG.ogImage],
   },
 
+  icons: {
+    icon: "/cropiq-logo.png",
+    shortcut: "/cropiq-logo.png",
+    apple: "/cropiq-logo.png",
+  },
+
   robots: {
     index: true,
     follow: true,
