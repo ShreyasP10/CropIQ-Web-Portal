@@ -2,6 +2,7 @@
 
 ### Premium production-ready website for the CropIQ Android app (AI crop disease + fruit detection).
 
+
 ## Maintenance Rule
 
 - This `README.md` is updated whenever major features/phases are changed.
