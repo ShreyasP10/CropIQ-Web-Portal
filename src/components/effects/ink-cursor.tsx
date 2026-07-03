@@ -52,8 +52,8 @@ export function InkCursor() {
           background: rgba(6, 182, 212, 0.7);
           z-index: 9999;
           pointer-events: none;
-          animation: cursor-particle-${i} 0.5s ease-out forwards;
-          --tx: ${Math.cos(angle) * 30}; --ty: ${Math.sin(angle) * 30};
+          animation: cursor-particle 0.5s ease-out forwards;
+          --tx: ${Math.cos(angle) * 30}px; --ty: ${Math.sin(angle) * 30}px;
         `;
         document.body.appendChild(p);
         setTimeout(() => p.remove(), 550);
@@ -117,10 +117,7 @@ export function InkCursor() {
           0% { opacity: 1; transform: scale(1); }
           100% { opacity: 0; transform: scale(3); }
         }
-        @keyframes cursor-particle-0 { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(30px, 0); } }
-        @keyframes cursor-particle-1 { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(0, 30px); } }
-        @keyframes cursor-particle-2 { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(-30px, 0); } }
-        @keyframes cursor-particle-3 { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(0, -30px); } }
+        @keyframes cursor-particle { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)); } }
       `}</style>
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, orderBy, query, limit } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, limit, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import type { VisitorData, PageView } from "@/types";
 
@@ -39,17 +39,13 @@ export function useVisitors(max = 50) {
 
 export function useVisitorPageViews(visitorId: string | null) {
   const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!(db && visitorId));
 
   useEffect(() => {
-    if (!db || !visitorId) {
-      setPageViews([]);
-      return;
-    }
-
-    setLoading(true);
+    if (!db || !visitorId) return;
     const q = query(
       collection(db, "analytics", "pageViews", "all"),
+      where("visitorId", "==", visitorId),
       orderBy("timestamp", "desc"),
       limit(50)
     );
@@ -59,10 +55,7 @@ export function useVisitorPageViews(visitorId: string | null) {
       (snapshot) => {
         const list: PageView[] = [];
         snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.visitorId === visitorId) {
-            list.push({ id: doc.id, ...data } as unknown as PageView);
-          }
+          list.push({ id: doc.id, ...doc.data() } as unknown as PageView);
         });
         setPageViews(list);
         setLoading(false);

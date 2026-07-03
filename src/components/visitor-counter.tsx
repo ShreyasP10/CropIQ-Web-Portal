@@ -9,10 +9,8 @@ import { Eye } from "lucide-react";
 
 export function VisitorCounter() {
   const [count, setCount] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     if (!rtdb || !db) return;
 
     const countRef = ref(rtdb, "Count/totalVisitors");
@@ -37,7 +35,7 @@ export function VisitorCounter() {
     return () => unsub();
   }, []);
 
-  if (!mounted || count === null) return null;
+  if (count === null) return null;
 
   return (
     <motion.div

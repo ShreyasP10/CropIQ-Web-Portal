@@ -4,8 +4,8 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email in [
-          "admin@cropiq.app",
-          "founder@cropiq.app"
+          "shreyaspawar1011@gmail.com",
+          "pixellpenguiin@gmail.com"
         ];
     }
 

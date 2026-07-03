@@ -39,11 +39,11 @@ function AnalyticsContent() {
   const [versionDownloads, setVersionDownloads] = useState<
     { version: string; downloads: number }[]
   >([]);
-  const [versionLoading, setVersionLoading] = useState(true);
+  const [versionLoading, setVersionLoading] = useState(!!rtdb);
   const [dailyStats, setDailyStats] = useState<
     { date: string; downloads: number; detections: number }[]
   >([]);
-  const [dailyLoading, setDailyLoading] = useState(true);
+  const [dailyLoading, setDailyLoading] = useState(!!rtdb);
   const [visitorDeviceStats, setVisitorDeviceStats] = useState<
     { name: string; value: number }[]
   >([]);
@@ -53,14 +53,11 @@ function AnalyticsContent() {
   const [visitorDailyStats, setVisitorDailyStats] = useState<
     { date: string; visitors: number }[]
   >([]);
-  const [visitorLoading, setVisitorLoading] = useState(true);
+  const [visitorLoading, setVisitorLoading] = useState(!!db);
 
   // Version downloads from RTDB
   useEffect(() => {
-    if (!rtdb) {
-      setVersionLoading(false);
-      return;
-    }
+    if (!rtdb) return;
     const versionRef = ref(rtdb, "VersionDownloads");
     const unsubscribe = onValue(
       versionRef,
@@ -84,10 +81,7 @@ function AnalyticsContent() {
 
   // Daily stats from RTDB
   useEffect(() => {
-    if (!rtdb) {
-      setDailyLoading(false);
-      return;
-    }
+    if (!rtdb) return;
     const dailyRef = ref(rtdb, "DailyStats");
     const unsubscribe = onValue(
       dailyRef,
@@ -115,10 +109,7 @@ function AnalyticsContent() {
 
   // Visitor analytics from Firestore
   useEffect(() => {
-    if (!db) {
-      setVisitorLoading(false);
-      return;
-    }
+    if (!db) return;
 
     const unsub = onSnapshot(
       collection(db, "analytics", "visitors", "all"),

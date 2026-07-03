@@ -24,13 +24,13 @@ export async function loginAdmin() {
   const result = await signInWithPopup(auth, provider);
   const email = result.user.email ?? "";
   
-  const idToken = await result.user.getIdToken();
-  await setAdminSessionCookie(idToken);
-
   if (!isAllowedAdmin(email)) {
     await signOut(auth);
     throw new Error("Unauthorized email. This account is not an admin.");
   }
+
+  const idToken = await result.user.getIdToken();
+  await setAdminSessionCookie(idToken);
 
   // Optionally set a custom claim via a server endpoint (recommended for production)
   // For now, we rely on the whitelist + Firebase Auth state.
