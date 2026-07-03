@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Package, BarChart3, Headphones, Bell } from "lucide-react";
+import { ArrowLeft, Package, BarChart3, Headphones, Bell, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/admin/apk-management", label: "APK Management", icon: Package },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/visitors", label: "Visitors", icon: Eye },
   { href: "/admin/support", label: "Support Inbox", icon: Headphones },
   { href: "/admin/notifications", label: "Notifications", icon: Bell },
 ];

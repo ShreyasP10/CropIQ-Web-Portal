@@ -7,6 +7,7 @@ const protectedPaths = [
   "/admin/analytics",
   "/admin/support",
   "/admin/notifications",
+  "/admin/visitors",
 ];
 
 export default function middleware(request: NextRequest) {

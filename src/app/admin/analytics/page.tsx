@@ -16,14 +16,15 @@ import {
   YAxis,
 } from "recharts";
 import { onValue, ref } from "firebase/database";
-import { rtdb } from "@/lib/firebase/client";
+import { collection, onSnapshot } from "firebase/firestore";
+import { rtdb, db } from "@/lib/firebase/client";
 import { useAdminCounts } from "@/hooks/use-admin-counts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { AdminAuthGuard } from "@/components/admin/auth-guard";
 import { AdminSubNav } from "@/components/admin/admin-subnav";
 
-const COLORS = ["#38bdf8", "#22c55e", "#a78bfa"];
+const COLORS = ["#38bdf8", "#22c55e", "#a78bfa", "#f59e0b", "#ec4899"];
 
 interface DailyStat {
   downloads: number;
@@ -38,15 +39,28 @@ function AnalyticsContent() {
   const [versionDownloads, setVersionDownloads] = useState<
     { version: string; downloads: number }[]
   >([]);
-  const [versionLoading, setVersionLoading] = useState(!!rtdb);
+  const [versionLoading, setVersionLoading] = useState(true);
   const [dailyStats, setDailyStats] = useState<
     { date: string; downloads: number; detections: number }[]
   >([]);
-  const [dailyLoading, setDailyLoading] = useState(!!rtdb);
+  const [dailyLoading, setDailyLoading] = useState(true);
+  const [visitorDeviceStats, setVisitorDeviceStats] = useState<
+    { name: string; value: number }[]
+  >([]);
+  const [visitorBrowserStats, setVisitorBrowserStats] = useState<
+    { name: string; value: number }[]
+  >([]);
+  const [visitorDailyStats, setVisitorDailyStats] = useState<
+    { date: string; visitors: number }[]
+  >([]);
+  const [visitorLoading, setVisitorLoading] = useState(true);
 
-  // Version downloads
+  // Version downloads from RTDB
   useEffect(() => {
-    if (!rtdb) return;
+    if (!rtdb) {
+      setVersionLoading(false);
+      return;
+    }
     const versionRef = ref(rtdb, "VersionDownloads");
     const unsubscribe = onValue(
       versionRef,
@@ -68,9 +82,12 @@ function AnalyticsContent() {
     return () => unsubscribe();
   }, []);
 
-  // Daily stats
+  // Daily stats from RTDB
   useEffect(() => {
-    if (!rtdb) return;
+    if (!rtdb) {
+      setDailyLoading(false);
+      return;
+    }
     const dailyRef = ref(rtdb, "DailyStats");
     const unsubscribe = onValue(
       dailyRef,
@@ -96,6 +113,61 @@ function AnalyticsContent() {
     return () => unsubscribe();
   }, []);
 
+  // Visitor analytics from Firestore
+  useEffect(() => {
+    if (!db) {
+      setVisitorLoading(false);
+      return;
+    }
+
+    const unsub = onSnapshot(
+      collection(db, "analytics", "visitors", "all"),
+      (snapshot) => {
+        const deviceCount: Record<string, number> = {};
+        const browserCount: Record<string, number> = {};
+        const dailyCount: Record<string, number> = {};
+        const today = new Date();
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+
+          const device = (data.device as string) || "Unknown";
+          deviceCount[device] = (deviceCount[device] || 0) + 1;
+
+          const browser = (data.browser as string) || "Unknown";
+          const browserBase = browser.split(" ")[0] || browser;
+          browserCount[browserBase] = (browserCount[browserBase] || 0) + 1;
+
+          const visitTime = data.lastVisit as number;
+          if (visitTime) {
+            const d = new Date(visitTime);
+            const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+            if (dateKey === today.toISOString().slice(0, 10) || Object.keys(dailyCount).length < 7) {
+              dailyCount[dateKey] = (dailyCount[dateKey] || 0) + 1;
+            }
+          }
+        });
+
+        setVisitorDeviceStats(
+          Object.entries(deviceCount).map(([name, value]) => ({ name, value }))
+        );
+        setVisitorBrowserStats(
+          Object.entries(browserCount).map(([name, value]) => ({ name, value }))
+        );
+        setVisitorDailyStats(
+          Object.entries(dailyCount)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .slice(-7)
+            .map(([date, visitors]) => ({ date, visitors }))
+        );
+        setVisitorLoading(false);
+      },
+      () => setVisitorLoading(false)
+    );
+
+    return () => unsub();
+  }, []);
+
   const pieData = useMemo(
     () => [
       { name: "Detections", value: counts.totalDetections || 1 },
@@ -111,7 +183,7 @@ function AnalyticsContent() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-4xl font-bold">Analytics Dashboard</h1>
         <p className="mt-2 text-muted-foreground">
-          Real‑time metrics and version adoption.
+          Real‑time metrics for downloads, detections, and website visitors.
         </p>
       </motion.div>
 
@@ -153,50 +225,140 @@ function AnalyticsContent() {
         </div>
 
         <div className="glass rounded-2xl p-4">
-          <h3 className="mb-4 text-lg font-medium">Downloads by Version</h3>
-          {!versionLoading ? (
-            versionDownloads.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={versionDownloads}>
-                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
-                  <XAxis dataKey="version" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Bar dataKey="downloads" fill="#60a5fa" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <p className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
-                No version download data yet.
-              </p>
-            )
-          ) : (
+          <h3 className="mb-4 text-lg font-medium">Website Visitors (Last 7 Days)</h3>
+          {visitorLoading ? (
             <Skeleton className="h-[300px] w-full" />
+          ) : visitorDailyStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={visitorDailyStats}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="#f59e0b"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  name="Visitors"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
+              No visitor data yet.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="glass rounded-2xl p-4">
+          <h3 className="mb-4 text-lg font-medium">Device Distribution</h3>
+          {visitorLoading ? (
+            <Skeleton className="h-[250px] w-full" />
+          ) : visitorDeviceStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={visitorDeviceStats}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={80}
+                  innerRadius={45}
+                  paddingAngle={5}
+                  label
+                >
+                  {visitorDeviceStats.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[250px] items-center justify-center text-sm text-muted-foreground">
+              No data
+            </div>
+          )}
+        </div>
+
+        <div className="glass rounded-2xl p-4">
+          <h3 className="mb-4 text-lg font-medium">Browser Distribution</h3>
+          {visitorLoading ? (
+            <Skeleton className="h-[250px] w-full" />
+          ) : visitorBrowserStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={visitorBrowserStats}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={80}
+                  innerRadius={45}
+                  paddingAngle={5}
+                  label
+                >
+                  {visitorBrowserStats.map((_, i) => (
+                    <Cell key={i} fill={COLORS[(i + 2) % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[250px] items-center justify-center text-sm text-muted-foreground">
+              No data
+            </div>
+          )}
+        </div>
+
+        <div className="glass rounded-2xl p-4">
+          <h3 className="mb-4 text-lg font-medium">Activity Distribution</h3>
+          {!statsLoading ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={80}
+                  innerRadius={45}
+                  paddingAngle={5}
+                  label
+                >
+                  {pieData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton className="h-[250px] w-full" />
           )}
         </div>
       </div>
 
       <div className="glass rounded-2xl p-4">
-        <h3 className="mb-4 text-lg font-medium">Activity Distribution</h3>
-        {!statsLoading ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={100}
-                innerRadius={60}
-                paddingAngle={5}
-                label
-              >
-                {pieData.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+        <h3 className="mb-4 text-lg font-medium">Downloads by Version</h3>
+        {!versionLoading ? (
+          versionDownloads.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={versionDownloads}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+                <XAxis dataKey="version" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="downloads" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
+              No version download data yet.
+            </p>
+          )
         ) : (
           <Skeleton className="h-[300px] w-full" />
         )}

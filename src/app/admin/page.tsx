@@ -14,7 +14,8 @@ import {
   BarChart3,
   Headphones,
   Bell,
-} from "lucide-react"; // removed Smartphone
+  Eye,
+} from "lucide-react";
 
 import {
   Card,
@@ -51,6 +52,12 @@ const navLinks = [
     color: "text-blue-500",
   },
   {
+    href: "/admin/visitors",
+    label: "Visitors",
+    icon: Eye,
+    color: "text-amber-500",
+  },
+  {
     href: "/admin/support",
     label: "Support Inbox",
     icon: Headphones,
@@ -80,7 +87,7 @@ function DashboardContent() {
       loading,
     },
     {
-      title: "Active Users",
+      title: "Total Users",
       value: counts.activeUsers,
       loading,
     },
@@ -153,7 +160,7 @@ function DashboardContent() {
           <h2 className="text-xl font-semibold">Quick Actions</h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {navLinks.map((link) => {
             const Icon = link.icon;
             return (

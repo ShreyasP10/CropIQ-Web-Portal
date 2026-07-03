@@ -46,3 +46,46 @@ export type NotificationPayload = {
   type: "new-version-alert" | "announcement" | "maintenance";
   targetAudience: "all-users" | "active-users" | "beta-testers";
 };
+
+export type VisitorData = {
+  id: string;
+  visitorId: string;
+  firstVisit: number;
+  lastVisit: number;
+  visitCount: number;
+  ip: string;
+  city: string;
+  state: string;
+  country: string;
+  isp: string;
+  browser: string;
+  os: string;
+  device: string;
+  screenWidth: number;
+  screenHeight: number;
+  language: string;
+  timezone: string;
+  referrer: string;
+};
+
+export type PageView = {
+  id: string;
+  visitorId: string;
+  page: string;
+  timestamp: number;
+};
+
+export type VisitorEvent = {
+  id: string;
+  visitorId: string;
+  event: string;
+  timestamp: number;
+};
+
+export type VisitorSummary = {
+  totalVisitors: number;
+  uniqueVisitors: number;
+  todayVisitors: number;
+  thisMonthVisitors: number;
+  liveVisitors: number;
+};

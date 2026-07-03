@@ -11,6 +11,8 @@ import { StarBackground } from "@/components/effects/star-background";
 import { StainedGlass } from "@/components/effects/stained-glass";
 import { FloatingOrbs } from "@/components/effects/floating-orbs";
 import { InkCursor } from "@/components/effects/ink-cursor";
+import { VisitorTracker } from "@/components/visitor-tracker";
+import { VisitorCounter } from "@/components/visitor-counter";
 
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -76,9 +78,11 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <VisitorTracker />
           </AppProviders>
         </div>
 
+        <VisitorCounter />
         <FloatingLinkedInButton />
 
         <Analytics />

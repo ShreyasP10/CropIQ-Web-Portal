@@ -50,6 +50,7 @@ export function ScreenshotCarousel({ items }: { items: readonly ScreenshotItem[]
                 alt={current.alt}
                 width={240}
                 height={480}
+                loading="eager"
                 className="w-full h-auto block"
               />
             </motion.div>

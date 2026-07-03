@@ -47,3 +47,5 @@ next-env.d.ts
 node_modules/
 test-admin.js
 serviceAccount.json
+
+requirements.txt
