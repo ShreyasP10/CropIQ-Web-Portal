@@ -31,6 +31,7 @@ export function SectionHeading({
       <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
         {title}
       </h2>
+      <div className={cn("mt-2 h-1 w-12 rounded-full bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500 animate-gradient-shift", align === "center" && "mx-auto")} />
       {description ? (
         <p className="mt-4 text-base text-muted-foreground md:text-lg">{description}</p>
       ) : null}

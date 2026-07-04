@@ -140,6 +140,7 @@ body {
 
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 
   h1, h2, h3 {
@@ -190,6 +191,16 @@ body {
     50% { opacity: 0.8; }
   }
 
+  @keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
   .animate-float {
     animation: float 4s ease-in-out infinite;
   }
@@ -197,4 +208,15 @@ body {
   .animate-pulse-glow {
     animation: pulse-glow 3s ease-in-out infinite;
   }
+
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+
 }

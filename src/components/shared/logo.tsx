@@ -21,7 +21,7 @@ export function Logo({ className, showText = true }: LogoProps) {
         />
       </span>
       {showText ? (
-        <span className="text-lg font-bold tracking-tight">
+        <span className="text-lg font-bold tracking-tight transition-all duration-300 group-hover:tracking-wide">
           <span className="gradient-text">{SITE_CONFIG.name}</span>
         </span>
       ) : null}

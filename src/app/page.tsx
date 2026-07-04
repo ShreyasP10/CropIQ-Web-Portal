@@ -97,10 +97,10 @@ export default function Home() {
         <div className="pointer-events-none absolute -right-20 top-1/4 h-64 w-64 rounded-full bg-amber-400/8 blur-3xl" />
 
         {/* Decorative leaf SVG */}
-        <svg className="pointer-events-none absolute -left-16 top-1/3 h-48 w-48 text-cyan-500/5" viewBox="0 0 200 200" fill="currentColor">
+        <svg className="pointer-events-none absolute -left-16 top-1/3 h-48 w-48 text-cyan-500/5 animate-spin-slow" style={{ animationDuration: "30s" }} viewBox="0 0 200 200" fill="currentColor">
           <path d="M100 10C45 60 10 110 10 150c0 22 18 40 40 40 25 0 50-20 50-60 0 40 25 60 50 60 22 0 40-18 40-40 0-40-35-90-90-140z" />
         </svg>
-        <svg className="pointer-events-none absolute -bottom-8 -right-8 h-36 w-36 rotate-45 text-green-500/5" viewBox="0 0 200 200" fill="currentColor">
+        <svg className="pointer-events-none absolute -bottom-8 -right-8 h-36 w-36 text-green-500/5 animate-spin-slow" style={{ animationDuration: "25s", animationDirection: "reverse" }} viewBox="0 0 200 200" fill="currentColor">
           <path d="M100 10C45 60 10 110 10 150c0 22 18 40 40 40 25 0 50-20 50-60 0 40 25 60 50 60 22 0 40-18 40-40 0-40-35-90-90-140z" />
         </svg>
 
@@ -111,7 +111,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <Logo className="mb-6" />
-            <p className="inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300">
+            <p className="inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300 animate-pulse-glow">
               AI Powered Crop & Fruit Detection
             </p>
             <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight md:text-6xl">
@@ -189,7 +189,7 @@ export default function Home() {
         <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-amber-400/5 blur-3xl" />
         <div className="relative mx-auto w-full max-w-7xl px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-3 inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300">
+            <p className="mb-3 inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300 animate-pulse-glow">
               Live Stats
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
