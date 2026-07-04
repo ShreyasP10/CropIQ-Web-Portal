@@ -7,10 +7,8 @@ import { AppProviders } from "@/providers/app-providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { FloatingLinkedInButton } from "@/components/shared/floating_linkedin_button";
-import { StarBackground } from "@/components/effects/star-background";
-import { StainedGlass } from "@/components/effects/stained-glass";
-import { FloatingOrbs } from "@/components/effects/floating-orbs";
-import { InkCursor } from "@/components/effects/ink-cursor";
+import { AmbientBackground } from "@/components/effects/ambient-background";
+import { LazyInkCursor } from "@/components/effects/lazy-ink-cursor";
 import { VisitorTracker } from "@/components/visitor-tracker";
 import { VisitorCounter } from "@/components/visitor-counter";
 
@@ -68,10 +66,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${figtree.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-sans">
-        <StarBackground />
-        <StainedGlass />
-        <FloatingOrbs />
-        <InkCursor />
+        <AmbientBackground />
+        <LazyInkCursor />
 
         <div className="relative z-10 flex flex-1 flex-col">
           <AppProviders>

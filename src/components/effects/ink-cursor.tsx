@@ -81,17 +81,12 @@ export function InkCursor() {
       setTimeout(() => ping.remove(), 2000);
     };
 
-    document.body.style.cursor = "none";
-    document.documentElement.style.cursor = "none";
-
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    window.addEventListener("click", handleClick);
+    window.addEventListener("click", handleClick, { passive: true });
 
     pingInterval.current = setInterval(spawnPing, 1600);
 
     return () => {
-      document.body.style.cursor = "";
-      document.documentElement.style.cursor = "";
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("click", handleClick);
       clearInterval(pingInterval.current);
@@ -102,12 +97,12 @@ export function InkCursor() {
     <>
       <div
         ref={dotRef}
-        className="pointer-events-none fixed z-[9999] h-1 w-1 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.8)]"
+        className="pointer-events-none fixed z-[9999] h-1 w-1 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.8)] will-change-transform"
         aria-hidden="true"
       />
       <div
         ref={ringRef}
-        className="pointer-events-none fixed z-[9999] h-8 w-8 rounded-full border border-cyan-400/30 shadow-[0_0_10px_rgba(6,182,212,0.15)] transition-[opacity,transform] duration-500 ease-out"
+        className="pointer-events-none fixed z-[9999] h-8 w-8 rounded-full border border-cyan-400/30 shadow-[0_0_10px_rgba(6,182,212,0.15)] transition-[opacity,transform] duration-200 ease-out will-change-transform"
         style={{ opacity: 0 }}
         aria-hidden="true"
       />
