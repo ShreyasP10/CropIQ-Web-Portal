@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="CropIQ Logo" width="120" height="120" />
+  <img src="public/cropiq-logo.png" alt="CropIQ Logo" width="120" height="120" />
   <h1 align="center">CropIQ Website</h1>
   <p align="center">
     Premium production-ready web portal for the CropIQ Android app
@@ -7,7 +7,7 @@
     AI-powered crop disease detection & fruit quality analysis
   </p>
   <p align="center">
-    <a href="https://cropiq.vercel.app"><strong>Visit Website »</strong></a>
+    <a href="https://cropiq-web-portal.vercel.app"><strong>Visit Website »</strong></a>
     <br /><br />
     <img src="https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js" alt="Next.js" />
     <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
