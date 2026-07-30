@@ -30,10 +30,7 @@ export function Footer() {
   const displayVersion = liveVersion ?? SITE_CONFIG.version; // fallback to static version
 
   return (
-    <footer className="relative border-t border-white/10 bg-background/70 backdrop-blur-xl">
-      {/* Gradient top accent */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-blue-500/50 via-cyan-500/50 to-green-500/50" />
-
+    <footer className="border-t bg-background">
       <div className="mx-auto w-full max-w-7xl px-4 py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}

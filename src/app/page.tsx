@@ -90,31 +90,13 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden py-16 md:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-green-500/5" />
-        <div className="pointer-events-none absolute -top-32 left-0 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 right-0 h-80 w-80 rounded-full bg-green-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 top-1/4 h-64 w-64 rounded-full bg-amber-400/8 blur-3xl" />
-
-        {/* Decorative leaf SVG */}
-        <svg className="pointer-events-none absolute -left-16 top-1/3 h-48 w-48 text-cyan-500/5 animate-spin-slow" style={{ animationDuration: "30s" }} viewBox="0 0 200 200" fill="currentColor">
-          <path d="M100 10C45 60 10 110 10 150c0 22 18 40 40 40 25 0 50-20 50-60 0 40 25 60 50 60 22 0 40-18 40-40 0-40-35-90-90-140z" />
-        </svg>
-        <svg className="pointer-events-none absolute -bottom-8 -right-8 h-36 w-36 text-green-500/5 animate-spin-slow" style={{ animationDuration: "25s", animationDirection: "reverse" }} viewBox="0 0 200 200" fill="currentColor">
-          <path d="M100 10C45 60 10 110 10 150c0 22 18 40 40 40 25 0 50-20 50-60 0 40 25 60 50 60 22 0 40-18 40-40 0-40-35-90-90-140z" />
-        </svg>
-
-        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-4 md:grid-cols-2 md:items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <Logo className="mb-6" />
-            <p className="inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300 animate-pulse-glow">
+      <section className="py-16 md:py-24">
+        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 md:grid-cols-2 md:items-center">
+          <div>
+            <p className="mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
               AI Powered Crop & Fruit Detection
             </p>
-            <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+            <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-6xl">
               <span className="gradient-text">CropIQ</span>
               <br />
               <span className="text-foreground">Premium AI for Modern Agriculture</span>
@@ -131,15 +113,10 @@ export default function Home() {
                 Explore Features
               </GradientButton>
             </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="relative flex items-center justify-center"
-          >
+          </div>
+          <div className="flex items-center justify-center">
             <ScreenshotCarousel items={SCREENSHOTS} />
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -183,16 +160,13 @@ export default function Home() {
       </SectionShell>
 
       {/* LIVE STATS */}
-      <section className="relative overflow-hidden py-16 md:py-20">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blue-500/5 via-cyan-500/5 to-green-500/5" />
-        <div className="pointer-events-none absolute -left-40 top-0 h-96 w-96 rounded-full bg-cyan-400/5 blur-3xl" />
-        <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-amber-400/5 blur-3xl" />
-        <div className="relative mx-auto w-full max-w-7xl px-4">
+      <section className="py-16 md:py-20">
+        <div className="mx-auto w-full max-w-7xl px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-3 inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300 animate-pulse-glow">
+            <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
               Live Stats
             </p>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
               Growing with farmers
             </h2>
           </div>
@@ -200,16 +174,16 @@ export default function Home() {
             {statItems.map((stat, i) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ type: "spring", stiffness: 120, damping: 16, delay: i * 0.08 }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <div className="rounded-2xl border border-border/40 bg-card/80 p-6 text-center shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div className="rounded-xl border bg-card p-6 text-center">
                   {statsLoading ? (
                     <Skeleton className="mx-auto h-8 w-20" />
                   ) : (
-                    <p className="bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500 bg-clip-text text-4xl font-bold text-transparent">
+                    <p className="text-4xl font-bold text-foreground">
                       <AnimatedCounter value={stat.value} />
                     </p>
                   )}

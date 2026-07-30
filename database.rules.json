@@ -1,28 +1,6 @@
 {
   "rules": {
-    "Count": {
-      ".read": true,
-      "totalDownloads": {
-        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
-      },
-      "todayDownloads": {
-        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
-      },
-      "totalDetections": {
-        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
-      },
-      "activeUsers": {
-        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
-      },
-      "communityPosts": {
-        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
-      }
-    },
-    "VersionDownloads": {
-      ".read": true,
-      "$version": {
-        ".write": "$version.matches(/^v[0-9]+\\.[0-9]+\\.[0-9]+$/) && newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
-      }
-    }
+    ".read": "auth != null",
+    ".write": "auth != null"
   }
 }

@@ -29,7 +29,16 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -39,12 +48,10 @@ export function Navbar() {
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       className={cn(
-        "sticky top-0 z-50 border-b transition-all duration-300 will-change-transform",
-        scrolled
-          ? "border-white/10 bg-background/85 shadow-lg backdrop-blur-2xl"
-          : "border-transparent bg-background/60 backdrop-blur-md"
+        "sticky top-0 z-50 border-b bg-background transition-shadow",
+        scrolled && "shadow-sm"
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4">

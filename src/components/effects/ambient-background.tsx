@@ -2,160 +2,101 @@
 
 import { useEffect, useRef } from "react";
 
-interface Star {
-  x: number;
-  y: number;
-  size: number;
-  alpha: number;
-  baseAlpha: number;
-  speed: number;
-}
-
-interface Orb {
-  x: number;
-  y: number;
-  radius: number;
-  speedX: number;
-  speedY: number;
-  gradient: string;
-  opacity: number;
-  phase: number;
-}
-
-const ORB_CONFIGS: Omit<Orb, "x" | "y">[] = [
-  { radius: 180, speedX: 0.15, speedY: 0.1, gradient: "rgba(56,189,248,", opacity: 0.04, phase: 0 },
-  { radius: 220, speedX: -0.1, speedY: 0.12, gradient: "rgba(6,182,212,", opacity: 0.035, phase: 1.5 },
-  { radius: 200, speedX: 0.08, speedY: -0.1, gradient: "rgba(34,197,94,", opacity: 0.03, phase: 3 },
-  { radius: 160, speedX: -0.12, speedY: -0.08, gradient: "rgba(251,191,36,", opacity: 0.03, phase: 4.5 },
-  { radius: 150, speedX: 0.1, speedY: 0.15, gradient: "rgba(168,85,247,", opacity: 0.025, phase: 6 },
-];
-
 export function AmbientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let animId: number;
+    let resizeTimer: ReturnType<typeof setTimeout>;
 
-    let stars: Star[] = [];
-    let orbs: Orb[] = [];
-    let animationId: number;
-    const gradientCache: Map<string, CanvasGradient> = new Map();
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
 
-    const initStars = (w: number, h: number) => {
-      const count = Math.min(Math.floor((w * h) / 12000), 80);
-      stars = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        size: Math.random() * 1.5 + 0.3,
-        alpha: Math.random() * 0.5 + 0.2,
-        baseAlpha: Math.random() * 0.5 + 0.2,
-        speed: Math.random() * 0.03 + 0.01,
-      }));
-    };
+    const stars = Array.from({ length: 25 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: Math.random() * 1.2 + 0.3,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.5 + 0.2,
+      baseAlpha: Math.random() * 0.4 + 0.15,
+    }));
 
-    const initOrbs = (w: number, h: number) => {
-      const positions = [
-        { x: w * 0.15, y: h * 0.2 },
-        { x: w * 0.85, y: h * 0.3 },
-        { x: w * 0.5, y: h * 0.7 },
-        { x: w * 0.3, y: h * 0.8 },
-        { x: w * 0.7, y: h * 0.15 },
-      ];
-      orbs = ORB_CONFIGS.map((cfg, i) => ({
-        ...cfg,
-        x: positions[i].x,
-        y: positions[i].y,
-      }));
-    };
+    const orbs = [
+      { x: w * 0.3, y: h * 0.3, r: 160, sx: 0.12, sy: 0.08, phase: 0 },
+      { x: w * 0.7, y: h * 0.6, r: 140, sx: -0.08, sy: -0.1, phase: 2 },
+    ];
 
-    const setup = (w: number, h: number) => {
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.scale(dpr, dpr);
-      initStars(w, h);
-      initOrbs(w, h);
-      gradientCache.clear();
-    };
+    const grad1 = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    grad1.addColorStop(0, "rgba(56,189,248,0.04)");
+    grad1.addColorStop(0.5, "rgba(56,189,248,0.02)");
+    grad1.addColorStop(1, "rgba(56,189,248,0)");
 
-    const getGradient = (cx: number, cy: number, r: number, color: string, opacity: number) => {
-      const key = `${Math.round(cx)},${Math.round(cy)},${Math.round(r)},${color},${opacity}`;
-      let gradient = gradientCache.get(key);
-      if (!gradient) {
-        gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        gradient.addColorStop(0, `${color} ${opacity})`);
-        gradient.addColorStop(0.5, `${color} ${opacity * 0.5})`);
-        gradient.addColorStop(1, `${color} 0)`);
-        gradientCache.set(key, gradient);
-      }
-      return gradient;
-    };
+    const grad2 = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    grad2.addColorStop(0, "rgba(34,197,94,0.035)");
+    grad2.addColorStop(0.5, "rgba(34,197,94,0.015)");
+    grad2.addColorStop(1, "rgba(34,197,94,0)");
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    const grads = [grad1, grad2];
 
-      const time = Date.now() * 0.0005;
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const t = Date.now() * 0.0005;
 
-      // Draw stars
-      for (const star of stars) {
-        star.alpha = star.baseAlpha + Math.sin(Date.now() * star.speed) * 0.15;
+      for (let i = 0; i < 25; i++) {
+        const s = stars[i];
+        const alpha = s.baseAlpha + Math.sin(t * s.speed + s.phase) * 0.12;
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, star.alpha)})`;
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, alpha)})`;
         ctx.fill();
       }
 
-      // Draw orbs with cached gradients
-      for (const orb of orbs) {
-        const driftX = Math.sin(time + orb.phase) * 30;
-        const driftY = Math.cos(time * 0.7 + orb.phase) * 25;
-        orb.x += orb.speedX;
-        orb.y += orb.speedY;
-
-        const pulse = 1 + Math.sin(time * 0.3 + orb.phase) * 0.1;
-        const cx = orb.x + driftX;
-        const cy = orb.y + driftY;
-        const r = orb.radius * pulse;
-
+      for (let i = 0; i < 2; i++) {
+        const o = orbs[i];
+        const cx = o.x + Math.sin(t + o.phase) * 25;
+        const cy = o.y + Math.cos(t * 0.7 + o.phase) * 20;
+        const r = o.r * (1 + Math.sin(t * 0.3 + o.phase) * 0.08);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(r, r);
         ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = getGradient(cx, cy, r, orb.gradient, orb.opacity);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
+        ctx.fillStyle = grads[i];
         ctx.fill();
+        ctx.restore();
       }
 
-      animationId = requestAnimationFrame(animate);
+      animId = requestAnimationFrame(draw);
     };
 
-    const resize = () => {
-      gradientCache.clear();
-      setup(window.innerWidth, window.innerHeight);
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        cancelAnimationFrame(animId);
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        ctx.scale(dpr, dpr);
+        draw();
+      }, 200);
     };
 
-    const onVisibility = () => {
-      if (document.hidden) {
-        cancelAnimationFrame(animationId);
-      } else {
-        animate();
-      }
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", onVisibility);
-    animate();
+    animId = requestAnimationFrame(draw);
+    window.addEventListener("resize", onResize);
 
     return () => {
-      window.removeEventListener("resize", resize);
-      document.removeEventListener("visibilitychange", onVisibility);
-      cancelAnimationFrame(animationId);
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimer);
     };
   }, []);
 

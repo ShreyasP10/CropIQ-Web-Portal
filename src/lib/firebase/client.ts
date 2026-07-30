@@ -5,7 +5,7 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, isSupported as isMessagingSupported } from "firebase/messaging";
 import { firebaseWebConfig, isFirebaseConfigured } from "./config";
 
 // ---------------------------------------------------------------------------
@@ -24,9 +24,18 @@ export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
 export const rtdb = app ? getDatabase(app) : null;
 
-// Messaging only works in the browser; avoid SSR errors
-export const messaging =
-  typeof window !== "undefined" && app ? getMessaging(app) : null;
+// Messaging only works in the browser and requires HTTPS
+let messagingPromise: Promise<ReturnType<typeof getMessaging> | null> | null = null;
+
+export function getMessagingInstance(): Promise<ReturnType<typeof getMessaging> | null> {
+  if (typeof window === "undefined" || !app) return Promise.resolve(null);
+  if (!messagingPromise) {
+    messagingPromise = isMessagingSupported().then((supported) =>
+      supported ? getMessaging(app!) : null
+    );
+  }
+  return messagingPromise;
+}
 
 // ---------------------------------------------------------------------------
 // Analytics – lazy, one‑time promise
