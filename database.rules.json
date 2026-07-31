@@ -1,6 +1,95 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "Crops": {
+      ".read": true
+    },
+    "Count": {
+      ".read": true,
+      "totalDownloads": {
+        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
+      },
+      "todayDownloads": {
+        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 5)"
+      },
+      "totalVisitors": {
+        ".write": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() + 50)"
+      },
+      "latestVersion": {
+        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
+      },
+      "totalDetections": {
+        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
+      },
+      "activeUsers": {
+        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
+      },
+      "communityPosts": {
+        ".write": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')"
+      }
+    },
+    "Users": {
+      "$uid": {
+        ".read": "$uid === auth.uid || (auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com'))",
+        ".write": "$uid === auth.uid",
+        "detections": {
+          ".read": "$uid === auth.uid || (auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com'))",
+          ".write": "$uid === auth.uid"
+        }
+      }
+    },
+    "Posts": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "Comment": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "Notifications": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "auth != null"
+      }
+    },
+    "presence": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "DailyActiveUsers": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')",
+      "$date": {
+        "$uid": {
+          ".write": "$uid === auth.uid"
+        }
+      }
+    },
+    "MonthlyActiveUsers": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')",
+      "$month": {
+        "$uid": {
+          ".write": "$uid === auth.uid"
+        }
+      }
+    },
+    "Device_Details": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')",
+      "$deviceId": {
+        ".write": "auth != null && newData.hasChildren(['deviceId', 'deviceName', 'manufacturer', 'androidVersion', 'appVersion', 'installDate'])"
+      }
+    },
+    "DeviceHeartbeats": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')",
+      "$deviceId": {
+        ".write": "auth != null && newData.isNumber()"
+      }
+    },
+    "DeviceDetail": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' || auth.token.email === 'pixellpenguiin@gmail.com')",
+      "$deviceId": {
+        ".write": "auth != null && newData.hasChildren(['lastSeen', 'model', 'manufacturer', 'sdk'])"
+      }
+    }
   }
 }
