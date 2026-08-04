@@ -36,5 +36,4 @@ export const NAV_LINKS = [
 
 export const ADMIN_WHITELIST = [
   "shreyaspawar1011@gmail.com",
-  "pixellpenguiin@gmail.com",
 ] as const;

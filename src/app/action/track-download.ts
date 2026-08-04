@@ -5,13 +5,25 @@ import "server-only";
 import { cookies } from "next/headers";
 import { getDatabase } from "firebase-admin/database";
 import { getAdminApp } from "@/lib/firebase/admin";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const COOLDOWN_MS = 15_000;
+// Max download-tracking calls per IP per minute
+const IP_RATE_LIMIT = 10;
+
+// Only allow version names like "v1.2.3" — prevents RTDB path injection
+const VERSION_NAME_PATTERN = /^v\d+\.\d+\.\d+$/;
 
 export async function trackDownloadAction(
   versionName: string
 ) {
   try {
+
+    if (typeof versionName !== "string" || !VERSION_NAME_PATTERN.test(versionName)) {
+      return;
+    }
+
+    if (!(await checkRateLimit(IP_RATE_LIMIT))) return;
 
     const cookieStore =
       await cookies();

@@ -10,6 +10,7 @@ import {
 import { auth } from "@/lib/firebase/client";
 import { isAllowedAdmin } from "@/lib/utils/admin-whitelist";
 import { setAdminSessionCookie } from "@/app/action/login";
+import { clearAdminSessionCookie } from "@/app/action/logout";
 import {
  useEffect,
  useState
@@ -37,10 +38,10 @@ export async function loginAdmin() {
   return result.user;
 }
 
-export function logoutAdmin() {
-  if (!auth) return Promise.resolve();
+export async function logoutAdmin() {
+  await clearAdminSessionCookie();
+  if (!auth) return;
   return signOut(auth);
-  
 }
 
 // Hook to check admin status without cookies

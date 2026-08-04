@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 
 type Audience = "all-users" | "active-users" | "beta-testers";
 
+const AUDIENCES: readonly Audience[] = ["all-users", "active-users", "beta-testers"];
+
 function audienceToTopic(audience: Audience): string {
   switch (audience) {
     case "beta-testers": return "beta-testers";
@@ -19,13 +21,26 @@ export async function sendFcmNotification(data: {
   description: string;
   targetAudience: Audience;
 }) {
-  // 1. Verify admin session
+  // 1. Validate inputs before anything else
+  if (
+    typeof data?.title !== "string" ||
+    typeof data?.description !== "string" ||
+    !AUDIENCES.includes(data.targetAudience)
+  ) {
+    throw new Error("Invalid input");
+  }
+  const title = data.title.trim();
+  const description = data.description.trim();
+  if (title.length < 1 || title.length > 100) throw new Error("Invalid title");
+  if (description.length < 1 || description.length > 500) throw new Error("Invalid description");
+
+  // 2. Verify admin session
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("cropiq_admin_session")?.value;
   const email = sessionCookie ? verifySignedCookie(sessionCookie) : null;
   if (!email) throw new Error("Unauthorized");
 
-  // 2. Double-check against allowed admin list (public env)
+  // 3. Double-check against allowed admin list (public env)
   const allowed = (process.env.NEXT_PUBLIC_ALLOWED_ADMIN_EMAILS ?? "")
     .split(",")
     .map((e) => e.trim().toLowerCase())
@@ -40,7 +55,7 @@ export async function sendFcmNotification(data: {
     const topic = audienceToTopic(data.targetAudience);
     await messaging.send({
       topic,
-      notification: { title: data.title, body: data.description },
+      notification: { title, body: description },
     });
     return { success: true };
   } catch (error) {

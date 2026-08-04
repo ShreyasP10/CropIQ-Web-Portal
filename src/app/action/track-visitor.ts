@@ -7,8 +7,11 @@ import { getAdminFirestore } from "@/lib/firebase/admin";
 import { getDatabase } from "firebase-admin/database";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const COOLDOWN_MS = 30_000;
+// Max tracking calls per IP per minute — stops bots hammering Firestore/RTDB
+const IP_RATE_LIMIT = 30;
 
 function parseUserAgent(ua: string) {
   const result = { browser: "Unknown", os: "Unknown", device: "Desktop" };
@@ -87,6 +90,8 @@ export async function trackVisitorAction(data: {
       || "unknown";
     const userAgent = headerStore.get("user-agent") || "";
     const parsed = parseUserAgent(userAgent);
+
+    if (!(await checkRateLimit(IP_RATE_LIMIT))) return;
 
     const db = getAdminFirestore();
     const rtdb = getDatabase(getAdminApp());

@@ -9,14 +9,23 @@ import {
 } from "firebase-admin/firestore";
 
 import { sanitizeInput } from "@/lib/utils/sanitize";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { SupportFormPayload } from "@/types";
 
 const RATE_LIMIT_SECONDS = 60;
+// Max submissions per IP per minute — stops bots flooding the inbox
+const IP_RATE_LIMIT = 5;
 
 export async function submitSupportAction(
   payload: SupportFormPayload
 ) {
   try {
+
+    if (!(await checkRateLimit(IP_RATE_LIMIT))) {
+      throw new Error(
+        "Too many requests. Please try again later."
+      );
+    }
 
     const cookieStore =
       await cookies();
