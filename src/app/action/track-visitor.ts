@@ -135,9 +135,10 @@ export async function trackVisitorAction(data: {
     if (!existing.exists) {
       visitorPayload.firstVisit = Date.now();
       visitorPayload.visitCount = 1;
+      // Only count NEW visitors toward the total visitor counter
+      await rtdb.ref("Count/totalVisitors").transaction((val) => (val ?? 0) + 1);
     }
 
-    await rtdb.ref("Count/totalVisitors").transaction((val) => (val ?? 0) + 1);
     await visitorRef.set(visitorPayload, { merge: true });
 
     await db.collection("analytics").doc("pageViews").collection("all").add({

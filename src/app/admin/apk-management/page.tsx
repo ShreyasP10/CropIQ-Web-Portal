@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  addApkVersion,
-  editApkVersion,
   getApkVersions,
-  removeApkVersion,
 } from "@/lib/services/apk.service";
+import {
+  addApkVersionAction,
+  updateApkVersionAction,
+  deleteApkVersionAction,
+} from "@/app/action/manage-apk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,18 +66,18 @@ function ApkManagementContent() {
     try {
       const payload = { ...form };
       if (editingId) {
-        await editApkVersion(editingId, payload);
+        await updateApkVersionAction(editingId, payload);
         toast.success("APK version updated");
       } else {
-        await addApkVersion(payload);
-        toast.success("APK version added");
+        await addApkVersionAction(payload);
+        toast.success("APK version added as latest");
       }
       setForm(emptyForm);
       setEditingId(null);
       const refreshed = await getApkVersions();
       setItems(refreshed);
-    } catch {
-      toast.error("Operation failed");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Operation failed");
     } finally {
       setLoading(false);
     }
@@ -95,13 +97,13 @@ function ApkManagementContent() {
     if (!confirm("Delete this version?")) return;
     setLoading(true);
     try {
-      await removeApkVersion(id);
+      await deleteApkVersionAction(id);
       toast.success("APK version deleted");
       if (editingId === id) cancelEdit();
       const refreshed = await getApkVersions();
       setItems(refreshed);
-    } catch {
-      toast.error("Deletion failed");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Deletion failed");
     } finally {
       setLoading(false);
     }
@@ -215,12 +217,15 @@ function ApkManagementContent() {
             <label className="flex items-center gap-2 text-sm md:col-span-2">
               <input
                 type="checkbox"
-                checked={form.isLatest}
+                checked={editingId ? form.isLatest : true}
+                disabled={!editingId}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, isLatest: e.target.checked }))
                 }
               />
-              Mark as latest version
+              {editingId
+                ? "Mark as latest version"
+                : "New APKs are automatically set as the latest version"}
             </label>
             <div className="flex gap-3 md:col-span-2">
               <Button type="submit" disabled={loading}>
