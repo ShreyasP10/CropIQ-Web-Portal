@@ -1,6 +1,6 @@
 "use client";
 
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import type { NotificationPayload } from "@/types";
 import { sanitizeInput } from "@/lib/utils/sanitize";
@@ -14,4 +14,12 @@ export async function createNotification(payload: NotificationPayload) {
     createdAt: serverTimestamp(),
     status: "queued",
   });
+}
+
+export async function updateNotificationStatus(
+  id: string,
+  status: "queued" | "sent" | "failed"
+) {
+  if (!db) throw new Error("Firebase is not configured.");
+  return updateDoc(doc(db, "notifications", id), { status });
 }

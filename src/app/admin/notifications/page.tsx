@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createNotification } from "@/lib/services/notification.service";
+import { createNotification, updateNotificationStatus } from "@/lib/services/notification.service";
 import { sendFcmNotification } from "@/app/action/send_notification";
 import { useNotificationHistory } from "@/hooks/use-notification-history";
 import type { NotificationPayload } from "@/types";
@@ -64,7 +64,7 @@ function NotificationsContent() {
 
     setLoading(true);
     try {
-      await createNotification(form);
+      const docRef = await createNotification(form);
 
       const result = await sendFcmNotification({
         title: form.title,
@@ -73,9 +73,11 @@ function NotificationsContent() {
       });
 
       if (result.success) {
+        await updateNotificationStatus(docRef.id, "sent");
         toast.success("Notification sent successfully!");
       } else {
-        toast.error("Saved but push send failed. Check server logs.");
+        await updateNotificationStatus(docRef.id, "failed");
+        toast.error(result.error || "Saved but push send failed.");
       }
 
       setForm(initialForm);
@@ -209,6 +211,7 @@ function NotificationsContent() {
                       <Badge
                         variant={
                           n.status === "sent" ? "default" :
+                          n.status === "failed" ? "destructive" :
                           n.status === "queued" ? "outline" :
                           "secondary"
                         }
