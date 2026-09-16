@@ -10,6 +10,12 @@ import { FieldValue } from "firebase-admin/firestore";
 
 const VERSION_NAME_PATTERN = /^v\d+\.\d+\.\d+$/;
 
+function errMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Operation failed";
+}
+
+type ActionResult = { success: true } | { success: false; error: string };
+
 type ApkPayload = {
   versionName: string;
   versionCode: number;
@@ -87,99 +93,114 @@ async function promoteNewestRemaining(db: ReturnType<typeof getAdminFirestore>) 
   await promoteLatest(db, snap.docs[0].id, String(next.versionName ?? ""));
 }
 
-export async function addApkVersionAction(payload: ApkPayload) {
-  await requireAdmin();
-  validatePayload(payload);
+export async function addApkVersionAction(payload: ApkPayload): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    validatePayload(payload);
 
-  const db = getAdminFirestore();
-  const docRef = db.collection("apk_versions").doc();
+    const db = getAdminFirestore();
+    const docRef = db.collection("apk_versions").doc();
 
-  const data = {
-    versionName: payload.versionName,
-    versionCode: payload.versionCode,
-    apkUrl: payload.apkUrl,
-    releaseDate: payload.releaseDate ?? "",
-    apkSize: payload.apkSize ?? "",
-    downloads: 0,
-    minAndroidVersion: payload.minAndroidVersion ?? "8.0",
-    description: payload.description ?? "",
-    releaseNotes: Array.isArray(payload.releaseNotes) ? payload.releaseNotes : [],
-    featuresAdded: Array.isArray(payload.featuresAdded) ? payload.featuresAdded : [],
-    bugFixes: Array.isArray(payload.bugFixes) ? payload.bugFixes : [],
-    securityImprovements: Array.isArray(payload.securityImprovements) ? payload.securityImprovements : [],
-    isLatest: true,
-    createdAt: FieldValue.serverTimestamp(),
-  };
+    const data = {
+      versionName: payload.versionName,
+      versionCode: payload.versionCode,
+      apkUrl: payload.apkUrl,
+      releaseDate: payload.releaseDate ?? "",
+      apkSize: payload.apkSize ?? "",
+      downloads: 0,
+      minAndroidVersion: payload.minAndroidVersion ?? "8.0",
+      description: payload.description ?? "",
+      releaseNotes: Array.isArray(payload.releaseNotes) ? payload.releaseNotes : [],
+      featuresAdded: Array.isArray(payload.featuresAdded) ? payload.featuresAdded : [],
+      bugFixes: Array.isArray(payload.bugFixes) ? payload.bugFixes : [],
+      securityImprovements: Array.isArray(payload.securityImprovements) ? payload.securityImprovements : [],
+      isLatest: true,
+      createdAt: FieldValue.serverTimestamp(),
+    };
 
-  // A newly uploaded APK automatically becomes the latest
-  const snap = await db.collection("apk_versions").get();
-  const batch = db.batch();
-  for (const doc of snap.docs) {
-    if (doc.data().isLatest === true) {
-      batch.update(doc.ref, { isLatest: false });
+    // A newly uploaded APK automatically becomes the latest
+    const snap = await db.collection("apk_versions").get();
+    const batch = db.batch();
+    for (const doc of snap.docs) {
+      if (doc.data().isLatest === true) {
+        batch.update(doc.ref, { isLatest: false });
+      }
     }
-  }
-  batch.set(docRef, data);
-  await batch.commit();
+    batch.set(docRef, data);
+    await batch.commit();
 
-  await setLatestVersion(payload.versionName);
-  return { success: true };
+    await setLatestVersion(payload.versionName);
+    return { success: true };
+  } catch (error) {
+    console.error("addApkVersionAction failed:", error);
+    return { success: false, error: errMessage(error) };
+  }
 }
 
-export async function updateApkVersionAction(id: string, payload: ApkPayload) {
-  await requireAdmin();
-  validatePayload(payload);
-  if (!id) throw new Error("Missing version id");
+export async function updateApkVersionAction(id: string, payload: ApkPayload): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    validatePayload(payload);
+    if (!id) throw new Error("Missing version id");
 
-  const db = getAdminFirestore();
-  const ref = db.collection("apk_versions").doc(id);
-  const doc = await ref.get();
-  if (!doc.exists) throw new Error("Version not found");
+    const db = getAdminFirestore();
+    const ref = db.collection("apk_versions").doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) throw new Error("Version not found");
 
-  const wasLatest = doc.data()?.isLatest === true;
-  const isLatest = payload.isLatest === true;
+    const wasLatest = doc.data()?.isLatest === true;
+    const isLatest = payload.isLatest === true;
 
-  await ref.update({
-    versionName: payload.versionName,
-    versionCode: payload.versionCode,
-    apkUrl: payload.apkUrl,
-    releaseDate: payload.releaseDate ?? "",
-    apkSize: payload.apkSize ?? "",
-    minAndroidVersion: payload.minAndroidVersion ?? "8.0",
-    description: payload.description ?? "",
-    releaseNotes: Array.isArray(payload.releaseNotes) ? payload.releaseNotes : [],
-    featuresAdded: Array.isArray(payload.featuresAdded) ? payload.featuresAdded : [],
-    bugFixes: Array.isArray(payload.bugFixes) ? payload.bugFixes : [],
-    securityImprovements: Array.isArray(payload.securityImprovements) ? payload.securityImprovements : [],
-    isLatest,
-  });
+    await ref.update({
+      versionName: payload.versionName,
+      versionCode: payload.versionCode,
+      apkUrl: payload.apkUrl,
+      releaseDate: payload.releaseDate ?? "",
+      apkSize: payload.apkSize ?? "",
+      minAndroidVersion: payload.minAndroidVersion ?? "8.0",
+      description: payload.description ?? "",
+      releaseNotes: Array.isArray(payload.releaseNotes) ? payload.releaseNotes : [],
+      featuresAdded: Array.isArray(payload.featuresAdded) ? payload.featuresAdded : [],
+      bugFixes: Array.isArray(payload.bugFixes) ? payload.bugFixes : [],
+      securityImprovements: Array.isArray(payload.securityImprovements) ? payload.securityImprovements : [],
+      isLatest,
+    });
 
-  if (isLatest) {
-    await promoteLatest(db, id, payload.versionName);
-  } else if (wasLatest) {
-    // Unchecking "latest" – promote the newest remaining version
-    await promoteNewestRemaining(db);
+    if (isLatest) {
+      await promoteLatest(db, id, payload.versionName);
+    } else if (wasLatest) {
+      // Unchecking "latest" – promote the newest remaining version
+      await promoteNewestRemaining(db);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("updateApkVersionAction failed:", error);
+    return { success: false, error: errMessage(error) };
   }
-
-  return { success: true };
 }
 
-export async function deleteApkVersionAction(id: string) {
-  await requireAdmin();
-  if (!id) throw new Error("Missing version id");
+export async function deleteApkVersionAction(id: string): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    if (!id) throw new Error("Missing version id");
 
-  const db = getAdminFirestore();
-  const ref = db.collection("apk_versions").doc(id);
-  const doc = await ref.get();
-  if (!doc.exists) throw new Error("Version not found");
+    const db = getAdminFirestore();
+    const ref = db.collection("apk_versions").doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) throw new Error("Version not found");
 
-  const wasLatest = doc.data()?.isLatest === true;
+    const wasLatest = doc.data()?.isLatest === true;
 
-  await ref.delete();
+    await ref.delete();
 
-  if (wasLatest) {
-    await promoteNewestRemaining(db);
+    if (wasLatest) {
+      await promoteNewestRemaining(db);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("deleteApkVersionAction failed:", error);
+    return { success: false, error: errMessage(error) };
   }
-
-  return { success: true };
 }

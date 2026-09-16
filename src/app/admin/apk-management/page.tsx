@@ -65,13 +65,18 @@ function ApkManagementContent() {
     setLoading(true);
     try {
       const payload = { ...form };
-      if (editingId) {
-        await updateApkVersionAction(editingId, payload);
-        toast.success("APK version updated");
-      } else {
-        await addApkVersionAction(payload);
-        toast.success("APK version added as latest");
+      const result = editingId
+        ? await updateApkVersionAction(editingId, payload)
+        : await addApkVersionAction(payload);
+
+      if (!result.success) {
+        toast.error(result.error || "Operation failed");
+        return;
       }
+
+      toast.success(
+        editingId ? "APK version updated" : "APK version added as latest"
+      );
       setForm(emptyForm);
       setEditingId(null);
       const refreshed = await getApkVersions();
@@ -97,7 +102,11 @@ function ApkManagementContent() {
     if (!confirm("Delete this version?")) return;
     setLoading(true);
     try {
-      await deleteApkVersionAction(id);
+      const result = await deleteApkVersionAction(id);
+      if (!result.success) {
+        toast.error(result.error || "Deletion failed");
+        return;
+      }
       toast.success("APK version deleted");
       if (editingId === id) cancelEdit();
       const refreshed = await getApkVersions();
