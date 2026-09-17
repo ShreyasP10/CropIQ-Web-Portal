@@ -47,6 +47,7 @@
       ".write": "auth != null"
     },
     "Notifications": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' && auth.token.email_verified == true)",
       "$userId": {
         ".read": "$userId === auth.uid",
         ".write": "auth != null"
@@ -91,6 +92,12 @@
       "$deviceId": {
         ".write": "auth != null && newData.hasChildren(['lastSeen', 'model', 'manufacturer', 'sdk'])"
       }
+    },
+    "VersionDownloads": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' && auth.token.email_verified == true)"
+    },
+    "DailyStats": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' && auth.token.email_verified == true)"
     }
   }
 }

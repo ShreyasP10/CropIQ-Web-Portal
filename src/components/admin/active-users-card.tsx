@@ -91,11 +91,6 @@ function UserAvatar({ user }: { user: PresenceUser }) {
                     @{user.username}
                   </p>
                 )}
-                {user.device && (
-                  <p className="text-xs text-muted-foreground">
-                    {user.device}
-                  </p>
-                )}
                 <p className="text-xs text-muted-foreground">
                   {user.isOnline
                     ? "Online"
@@ -113,11 +108,9 @@ function UserAvatar({ user }: { user: PresenceUser }) {
 export function ActiveUsersCard({
   users,
   loading,
-  todayCount,
 }: {
   users: PresenceUser[];
   loading: boolean;
-  todayCount?: number;
 }) {
   if (loading) {
     return (
@@ -151,7 +144,6 @@ export function ActiveUsersCard({
         <h3 className="text-lg font-semibold">Active Users</h3>
         <span className="text-xs text-muted-foreground">
           {onlineCount} online
-          {typeof todayCount === "number" ? ` · ${todayCount} today` : ""}
         </span>
       </div>
       <div className="flex gap-3 overflow-visible py-1">
