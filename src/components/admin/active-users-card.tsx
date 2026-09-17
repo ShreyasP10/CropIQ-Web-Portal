@@ -91,6 +91,11 @@ function UserAvatar({ user }: { user: PresenceUser }) {
                     @{user.username}
                   </p>
                 )}
+                {user.device && (
+                  <p className="text-xs text-muted-foreground">
+                    {user.device}
+                  </p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {user.isOnline
                     ? "Online"

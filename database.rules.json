@@ -28,6 +28,7 @@
       }
     },
     "Users": {
+      ".read": "auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' && auth.token.email_verified == true)",
       "$uid": {
         ".read": "$uid === auth.uid || (auth != null && (auth.token.email === 'shreyaspawar1011@gmail.com' && auth.token.email_verified == true))",
         ".write": "$uid === auth.uid",
