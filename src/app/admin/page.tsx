@@ -73,7 +73,7 @@ const navLinks = [
 
 function DashboardContent() {
   const { counts, loading } = useAdminCounts();
-  const { users: presenceUsers, loading: presenceLoading } = usePresenceUsers();
+  const { users: presenceUsers, loading: presenceLoading, todayCount } = usePresenceUsers();
 
   const cards = [
     {
@@ -151,7 +151,7 @@ function DashboardContent() {
 
       {/* Active Users Section */}
       <div className="mt-10">
-        <ActiveUsersCard users={presenceUsers} loading={presenceLoading} />
+        <ActiveUsersCard users={presenceUsers} loading={presenceLoading} todayCount={todayCount} />
       </div>
 
       {/* Quick Actions */}
